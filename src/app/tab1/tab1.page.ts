@@ -15,29 +15,43 @@ import { Gesture, GestureController } from '@ionic/angular';
 export class Tab1Page implements AfterViewInit {
   @ViewChild('swipeCard', { read: ElementRef }) swipeCard!: ElementRef;
 
+  private dismissed = false;
+
   constructor(private gestureCtrl: GestureController) {}
 
   ngAfterViewInit() {
+    const card = this.swipeCard.nativeElement;
+
     const gesture: Gesture = this.gestureCtrl.create({
-      el: this.swipeCard.nativeElement,
+      el: card,
       gestureName: 'swipe',
-      threshold: 10,
       onStart: () => {
-        this.swipeCard.nativeElement.style.transition = 'none';
+        this.dismissed = false;
+        card.style.transition = 'none';
       },
       onMove: ev => {
-        this.swipeCard.nativeElement.style.transform = `translateX(${ev.deltaX}px)`;
+        if (this.dismissed) return;
+
+        const rotate = ev.deltaX / 20;
+        card.style.transform = `translateX(${ev.deltaX}px) rotate(${rotate}deg)`;
+
+        if (Math.abs(ev.deltaX) > 150) {
+          this.dismissed = true;
+          const direction = ev.deltaX > 0 ? 1000 : -1000;
+          const rotateOut = direction / 20;
+          card.style.transition = 'transform 0.3s ease';
+          card.style.transform = `translateX(${direction}px) rotate(${rotateOut}deg)`;
+          card.style.pointerEvents = 'none';
+
+          setTimeout(() => {
+            card.style.display = 'none';
+          }, 300);
+        }
       },
-      onEnd: ev => {
-        this.swipeCard.nativeElement.style.transition = 'transform 0.3s ease';
-        if (ev.deltaX > 150) {
-          console.log('Swiped right');
-          this.swipeCard.nativeElement.style.transform = 'translateX(1000px)';
-        } else if (ev.deltaX < -150) {
-          console.log('Swiped left');
-          this.swipeCard.nativeElement.style.transform = 'translateX(-1000px)';
-        } else {
-          this.swipeCard.nativeElement.style.transform = 'translateX(0)';
+      onEnd: () => {
+        if (!this.dismissed) {
+          card.style.transition = 'transform 0.3s ease';
+          card.style.transform = 'translateX(0) rotate(0)';
         }
       }
     });
