@@ -1,21 +1,14 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Swipe Demo</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content>
-  <div #swipeCard class="swipe-card">
-    <img src="../assets/images/poison-ivy-1652109_1280.jpg" alt="Swipe me" />
+  <div class="card-stack">
+    <div
+      *ngFor="let card of cards; let i = index"
+      #swipeCard
+      class="swipe-card"
+      [style.zIndex]="cards.length - i"
+      [class.top-card]="i === currentCardIndex"
+      [hidden]="i < currentCardIndex"
+    >
+      <img [src]="card.img" />
+    </div>
   </div>
 </ion-content>
-<!-- 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
-  <app-explore-container name="Tab 1 page"></app-explore-container>
-</ion-content> -->
