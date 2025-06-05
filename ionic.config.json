@@ -1,0 +1,7 @@
+{
+  "name": "poison-ivy-game-01",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
