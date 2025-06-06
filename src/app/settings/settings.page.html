@@ -1,0 +1,23 @@
+<!-- settings.page.html -->
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Settings</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+  <ion-item>
+    <ion-label>Sound</ion-label>
+    <ion-toggle [(ngModel)]="sound" (ionChange)="updateSettings()"></ion-toggle>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Vibration</ion-label>
+    <ion-toggle [(ngModel)]="vibration" (ionChange)="updateSettings()"></ion-toggle>
+  </ion-item>
+
+  <ion-item>
+    <ion-label>Visual</ion-label>
+    <ion-toggle [(ngModel)]="visual" (ionChange)="updateSettings()"></ion-toggle>
+  </ion-item>
+</ion-content>
