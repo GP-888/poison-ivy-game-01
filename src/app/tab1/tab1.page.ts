@@ -2,10 +2,11 @@ import {
   AfterViewInit,
   Component,
   ElementRef,
+  NgZone,
   QueryList,
-  ViewChildren
+  ViewChildren,
 } from '@angular/core';
-import { GestureController, Gesture } from '@ionic/angular';
+import { GestureController } from '@ionic/angular';
 import { FeedbackService } from '../services/feedback.service';
 
 @Component({
@@ -15,7 +16,8 @@ import { FeedbackService } from '../services/feedback.service';
   standalone: false,
 })
 export class Tab1Page implements AfterViewInit {
-  @ViewChildren('swipeCard', { read: ElementRef }) cardElements!: QueryList<ElementRef>;
+  @ViewChildren('swipeCard', { read: ElementRef })
+  cardElements!: QueryList<ElementRef>;
 
   cards = [
     { id: 1, img: 'assets/images/not_poison_ivy_01.jpg', isPoisonIvy: false },
@@ -27,18 +29,23 @@ export class Tab1Page implements AfterViewInit {
     { id: 7, img: 'assets/images/poisonIvy_640_umdExtension_notForRealGame.jpg', isPoisonIvy: true },
     { id: 8, img: 'assets/images/Poison_ivy_01.jpg', isPoisonIvy: true },
     { id: 9, img: 'assets/images/Poison_ivy_02.jpg', isPoisonIvy: true },
-    { id: 10, img: 'assets/images/Poison_ivy_03.jpg', isPoisonIvy: true }
+    { id: 10, img: 'assets/images/Poison_ivy_03.jpg', isPoisonIvy: true },
   ];
 
   currentCardIndex = 0;
+  score = 0;
+  correctCount = 0;
+  incorrectCount = 0;
+  lastSwipeCorrect: boolean | null = null;
 
   constructor(
     private gestureCtrl: GestureController,
-    private feedbackService: FeedbackService
+    private feedbackService: FeedbackService,
+    private ngZone: NgZone
   ) {}
 
   ngAfterViewInit() {
-    setTimeout(() => this.attachGestureToCurrentCard(), 200);  // wait for DOM + image
+    setTimeout(() => this.attachGestureToCurrentCard(), 200); // wait for DOM + image
     this.cardElements.changes.subscribe(() => {
       setTimeout(() => this.attachGestureToCurrentCard(), 200);
     });
@@ -64,16 +71,16 @@ export class Tab1Page implements AfterViewInit {
       canStart: () => true,
       onStart: () => {
         cardEl.style.transition = 'none';
-        cardEl.focus?.(); // ensure gesture gets focus in desktop
+        cardEl.focus?.(); // focus for desktop
       },
-      onMove: ev => {
+      onMove: (ev) => {
         const x = ev.deltaX;
         const y = ev.deltaY;
         const rotate = x * 0.1;
         cardEl.style.transition = 'none';
         cardEl.style.transform = `translate(${x}px, ${y}px) rotate(${rotate}deg)`;
       },
-      onEnd: ev => {
+      onEnd: (ev) => {
         const x = ev.deltaX;
         const threshold = 100;
         const userSwipedRight = x > threshold;
@@ -92,11 +99,14 @@ export class Tab1Page implements AfterViewInit {
 
           this.feedbackService.giveFeedback(isCorrect, cardEl);
 
+          this.ngZone.run(() => {
+            this.updateScores(isCorrect);
+          });
+
           setTimeout(() => {
             this.currentCardIndex++;
             this.attachGestureToCurrentCard();
           }, 300);
-
         } else {
           cardEl.style.transition = 'transform 0.3s ease';
           cardEl.style.transform = 'translate(0, 0) rotate(0)';
@@ -105,5 +115,16 @@ export class Tab1Page implements AfterViewInit {
     });
 
     gesture.enable(true);
+  }
+
+  updateScores(isCorrect: boolean) {
+    if (isCorrect) {
+      this.correctCount++;
+      this.score++;
+    } else {
+      this.incorrectCount++;
+      this.score--;
+    }
+    this.lastSwipeCorrect = isCorrect;
   }
 }

@@ -6,10 +6,18 @@
       class="swipe-card"
       tabindex="0"
       [style.zIndex]="cards.length - i"
-      [class.top-card]="i === currentCardIndex"
-      [hidden]="i < currentCardIndex"
     >
-      <img [src]="card.img" />
+      <img [src]="card.img" alt="Card Image" />
+    </div>
+  </div>
+
+  <div class="score-info">
+    <div>Score: {{ score }}</div>
+    <div>Correct swipes: {{ correctCount }}</div>
+    <div>Incorrect swipes: {{ incorrectCount }}</div>
+    <div>
+      Last card swiped:
+      {{ lastSwipeCorrect === true ? '✅' : lastSwipeCorrect === false ? '❌' : '' }}
     </div>
   </div>
 </ion-content>
