@@ -17,33 +17,51 @@ export class Tab1Page implements AfterViewInit {
   @ViewChildren('swipeCard', { read: ElementRef }) cardElements!: QueryList<ElementRef>;
 
   cards = [
-    { id: 1, img: 'assets/img1.jpg' },
-    { id: 2, img: 'assets/img2.jpg' },
-    { id: 3, img: 'assets/img3.jpg' },
-    { id: 4, img: 'assets/img4.jpg' }
+    { id: 1, img: 'assets/images/not_poison_ivy_01.jpg' },
+    { id: 2, img: 'assets/images/not_poison_ivy_02.jpg' },
+    { id: 3, img: 'assets/images/not_poison_ivy_03.jpg' },
+    { id: 4, img: 'assets/images/not_poison_ivy_04.jpg' },
+    { id: 5, img: 'assets/images/poison-ivy-1652109_1280.jpg' },
+    { id: 6, img: 'assets/images/poison-ivy_pixabay_01.jpg' },
+    { id: 7, img: 'assets/images/poisonIvy_640_umdExtension_notForRealGame.jpg' },
+    { id: 8, img: 'assets/images/Poison_ivy_01.jpg' },
+    { id: 9, img: 'assets/images/Poison_ivy_02.jpg' },
+    { id: 10, img: 'assets/images/Poison_ivy_03.jpg' }
   ];
 
   currentCardIndex = 0;
-  private currentGesture?: Gesture;
 
   constructor(private gestureCtrl: GestureController) {}
 
   ngAfterViewInit() {
+    setTimeout(() => this.attachGestureToCurrentCard(), 200);  // wait for DOM + image
     this.cardElements.changes.subscribe(() => {
-      this.bindGesture();
+      setTimeout(() => this.attachGestureToCurrentCard(), 200);
     });
-    this.bindGesture();
   }
 
-  bindGesture() {
-    this.currentGesture?.destroy(); // clean up old gesture
-    const cardEl = this.cardElements.get(this.currentCardIndex)?.nativeElement;
-    if (!cardEl) return;
+  attachGestureToCurrentCard() {
+    const card = this.cardElements.get(this.currentCardIndex)?.nativeElement;
+    if (!card) return;
 
+    const img = card.querySelector('img');
+    if (img && !img.complete) {
+      img.onload = () => this.createGesture(card);
+    } else {
+      this.createGesture(card);
+    }
+  }
+
+  createGesture(cardEl: HTMLElement) {
     const gesture = this.gestureCtrl.create({
       el: cardEl,
       gestureName: 'swipe-card',
       threshold: 0,
+      canStart: () => true,
+      onStart: () => {
+        cardEl.style.transition = 'none';
+        cardEl.focus?.(); // ensure gesture gets focus in desktop
+      },
       onMove: ev => {
         const x = ev.deltaX;
         const y = ev.deltaY;
@@ -61,8 +79,9 @@ export class Tab1Page implements AfterViewInit {
           cardEl.style.transform = `translate(${flyX}px, 0) rotate(${rotate}deg)`;
           setTimeout(() => {
             this.currentCardIndex++;
-            this.bindGesture();
+            this.attachGestureToCurrentCard();
           }, 300);
+
         } else {
           cardEl.style.transition = 'transform 0.3s ease';
           cardEl.style.transform = 'translate(0, 0) rotate(0)';
@@ -71,6 +90,5 @@ export class Tab1Page implements AfterViewInit {
     });
 
     gesture.enable(true);
-    this.currentGesture = gesture;
   }
 }
