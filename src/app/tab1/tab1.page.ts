@@ -19,18 +19,31 @@ export class Tab1Page implements AfterViewInit {
   @ViewChildren('swipeCard', { read: ElementRef })
   cardElements!: QueryList<ElementRef>;
 
-  cards = [
-    { id: 1, img: 'assets/images/not_poison_ivy_01.jpg', isPoisonIvy: false },
-    { id: 2, img: 'assets/images/not_poison_ivy_02.jpg', isPoisonIvy: false },
-    { id: 3, img: 'assets/images/not_poison_ivy_03.jpg', isPoisonIvy: false },
-    { id: 4, img: 'assets/images/not_poison_ivy_04.jpg', isPoisonIvy: false },
-    { id: 5, img: 'assets/images/poison-ivy-1652109_1280.jpg', isPoisonIvy: true },
-    { id: 6, img: 'assets/images/poison-ivy_pixabay_01.jpg', isPoisonIvy: true },
-    { id: 7, img: 'assets/images/poisonIvy_640_umdExtension_notForRealGame.jpg', isPoisonIvy: true },
-    { id: 8, img: 'assets/images/Poison_ivy_01.jpg', isPoisonIvy: true },
-    { id: 9, img: 'assets/images/Poison_ivy_02.jpg', isPoisonIvy: true },
-    { id: 10, img: 'assets/images/Poison_ivy_03.jpg', isPoisonIvy: true },
+  levelSelected = false;
+  selectedLevel = 0;
+
+  allCards = [
+    { id: 1, img: 'assets/images/not_poison_ivy_01.jpg', isPoisonIvy: false, level: 1 },
+    { id: 2, img: 'assets/images/poison-ivy_pixabay_01.jpg', isPoisonIvy: true, level: 1 },
+
+    { id: 3, img: 'assets/images/not_poison_ivy_01.jpg', isPoisonIvy: false, level: 2 },
+    { id: 4, img: 'assets/images/not_poison_ivy_02.jpg', isPoisonIvy: false, level: 2 },
+    { id: 5, img: 'assets/images/poison-ivy_pixabay_01.jpg', isPoisonIvy: true, level: 2 },
+    { id: 6, img: 'assets/images/poison-ivy-1652109_1280.jpg', isPoisonIvy: true, level: 2 },
+
+    { id: 7, img: 'assets/images/not_poison_ivy_01.jpg', isPoisonIvy: false, level: 3 },
+    { id: 8, img: 'assets/images/not_poison_ivy_02.jpg', isPoisonIvy: false, level: 3 },
+    { id: 9, img: 'assets/images/not_poison_ivy_03.jpg', isPoisonIvy: false, level: 3 },
+    { id: 10, img: 'assets/images/not_poison_ivy_04.jpg', isPoisonIvy: false, level: 3 },
+    { id: 11, img: 'assets/images/poison-ivy-1652109_1280.jpg', isPoisonIvy: true, level: 3 },
+    { id: 12, img: 'assets/images/poison-ivy_pixabay_01.jpg', isPoisonIvy: true, level: 3 },
+    { id: 13, img: 'assets/images/poisonIvy_640_umdExtension_notForRealGame.jpg', isPoisonIvy: true, level: 3 },
+    { id: 14, img: 'assets/images/Poison_ivy_01.jpg', isPoisonIvy: true, level: 3 },
+    { id: 15, img: 'assets/images/Poison_ivy_02.jpg', isPoisonIvy: true, level: 3 },
+    { id: 16, img: 'assets/images/Poison_ivy_03.jpg', isPoisonIvy: true, level: 3 },
   ];
+
+  cards: { id: number; img: string; isPoisonIvy: boolean; level: number }[] = [];
 
   currentCardIndex = 0;
   score = 0;
@@ -55,6 +68,18 @@ export class Tab1Page implements AfterViewInit {
     this.cardElements.changes.subscribe(() => {
       setTimeout(() => this.attachGestureToCurrentCard(), 200);
     });
+  }
+
+  startGame(level: number) {
+    this.levelSelected = true;
+    this.selectedLevel = level;
+    this.cards = this.allCards.filter((card) => card.level === level);
+    this.resetGame();
+  }
+
+  done() {
+    this.levelSelected = false;
+    this.cards = [];
   }
 
   attachGestureToCurrentCard() {
@@ -143,17 +168,16 @@ export class Tab1Page implements AfterViewInit {
     gesture.enable(true);
   }
 
- updateScores(isCorrect: boolean) {
-  if (isCorrect) {
-    this.correctCount++;
-  } else {
-    this.incorrectCount++;
+  updateScores(isCorrect: boolean) {
+    if (isCorrect) {
+      this.correctCount++;
+    } else {
+      this.incorrectCount++;
+    }
+    this.lastSwipeCorrect = isCorrect;
   }
-  this.lastSwipeCorrect = isCorrect;
-}
 
   resetGame() {
-    this.cards = [...this.cards]; // reassign to reset DOM
     this.currentCardIndex = 0;
     this.score = 0;
     this.correctCount = 0;
