@@ -1,3 +1,4 @@
+<!-- tab1.page.html -->
 <ion-content>
   <!-- Level selection screen -->
   <div *ngIf="!levelSelected" class="level-selector">
@@ -30,8 +31,8 @@
       <p>Incorrect swipes: {{ incorrectCount }}</p>
 
       <div class="end-buttons">
-        <ion-button (click)="resetGame()">Play Again</ion-button>
-        <ion-button color="medium" (click)="done()">I'm done</ion-button>
+        <ion-button (click)="resetGame()">Play Again (same level)</ion-button>
+        <ion-button color="medium" (click)="done()">Choose Level</ion-button>
       </div>
     </div>
   </div>

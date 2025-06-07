@@ -1,3 +1,4 @@
+// tab1.module.ts
 import { IonicModule } from '@ionic/angular';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';

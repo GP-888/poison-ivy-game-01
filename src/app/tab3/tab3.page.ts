@@ -1,3 +1,4 @@
+// tab3.page.ts
 import { Component } from '@angular/core';
 
 @Component({

@@ -1,3 +1,4 @@
+// tab2-routing.module.ts
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { Tab2Page } from './tab2.page';

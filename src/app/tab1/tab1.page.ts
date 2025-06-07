@@ -1,3 +1,4 @@
+// Tab1Page.page.ts
 import {
   AfterViewInit,
   Component,
@@ -6,7 +7,7 @@ import {
   QueryList,
   ViewChildren,
 } from '@angular/core';
-import { GestureController } from '@ionic/angular';
+import { GestureController, ViewWillEnter } from '@ionic/angular';
 import { FeedbackService } from '../services/feedback.service';
 
 @Component({
@@ -15,7 +16,7 @@ import { FeedbackService } from '../services/feedback.service';
   styleUrls: ['tab1.page.scss'],
   standalone: false,
 })
-export class Tab1Page implements AfterViewInit {
+export class Tab1Page implements AfterViewInit, ViewWillEnter {
   @ViewChildren('swipeCard', { read: ElementRef })
   cardElements!: QueryList<ElementRef>;
 
@@ -63,6 +64,11 @@ export class Tab1Page implements AfterViewInit {
     private ngZone: NgZone
   ) {}
 
+  ionViewWillEnter() {
+    // Reset to Choose a Level screen when user selects the Play tab
+    this.done();
+  }
+
   ngAfterViewInit() {
     setTimeout(() => this.attachGestureToCurrentCard(), 200);
     this.cardElements.changes.subscribe(() => {
@@ -80,6 +86,8 @@ export class Tab1Page implements AfterViewInit {
   done() {
     this.levelSelected = false;
     this.cards = [];
+    this.currentCardIndex = 0;
+    this.gameOver = false;
   }
 
   attachGestureToCurrentCard() {
