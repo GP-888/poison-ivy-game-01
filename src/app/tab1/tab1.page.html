@@ -15,7 +15,7 @@
     <!-- End Game Display -->
     <div class="end-game-summary" *ngIf="gameOver">
       <h2>Game Over!</h2>
-      <p>Score: {{ score }}</p>
+      <p>Score: {{ correctCount }} out of {{ cards.length }}</p>
       <p>Correct swipes: {{ correctCount }}</p>
       <p>Incorrect swipes: {{ incorrectCount }}</p>
 
@@ -28,7 +28,7 @@
 
   <!-- Score Info (gameplay only) -->
   <div class="score-info" *ngIf="!gameOver">
-    <div>Score: {{ score }}</div>
+   <div>Score: {{ correctCount }} out of {{ cards.length }}</div>
     <div>Correct swipes: {{ correctCount }}</div>
     <div>Incorrect swipes: {{ incorrectCount }}</div>
     <div>

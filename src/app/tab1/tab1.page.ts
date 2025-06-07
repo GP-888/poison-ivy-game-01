@@ -143,16 +143,14 @@ export class Tab1Page implements AfterViewInit {
     gesture.enable(true);
   }
 
-  updateScores(isCorrect: boolean) {
-    if (isCorrect) {
-      this.correctCount++;
-      this.score++;
-    } else {
-      this.incorrectCount++;
-      this.score--;
-    }
-    this.lastSwipeCorrect = isCorrect;
+ updateScores(isCorrect: boolean) {
+  if (isCorrect) {
+    this.correctCount++;
+  } else {
+    this.incorrectCount++;
   }
+  this.lastSwipeCorrect = isCorrect;
+}
 
   resetGame() {
     this.cards = [...this.cards]; // reassign to reset DOM
