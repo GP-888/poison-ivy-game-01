@@ -37,12 +37,11 @@ export class Tab1Page implements AfterViewInit {
   correctCount = 0;
   incorrectCount = 0;
   lastSwipeCorrect: boolean | null = null;
+  gameOver = false;
 
-  // Feedback icon state
   showFeedbackIcon = false;
   feedbackIcon = '';
   feedbackHidden = true;
-
   private feedbackTimeout?: ReturnType<typeof setTimeout>;
 
   constructor(
@@ -59,6 +58,11 @@ export class Tab1Page implements AfterViewInit {
   }
 
   attachGestureToCurrentCard() {
+    if (this.currentCardIndex >= this.cards.length) {
+      this.gameOver = true;
+      return;
+    }
+
     const card = this.cardElements.get(this.currentCardIndex)?.nativeElement;
     if (!card) return;
 
@@ -102,20 +106,16 @@ export class Tab1Page implements AfterViewInit {
           this.ngZone.run(() => {
             this.updateScores(isCorrect);
 
-            // Set icon and show it
             this.feedbackIcon = isCorrect ? '✓' : '✗';
             this.showFeedbackIcon = true;
             this.feedbackHidden = false;
 
-            // Clear any previous timeout
             if (this.feedbackTimeout) {
               clearTimeout(this.feedbackTimeout);
             }
 
-            // Hide icon after 2 seconds with fade out
             this.feedbackTimeout = setTimeout(() => {
               this.feedbackHidden = true;
-              // Hide completely after fade transition (0.5s)
               setTimeout(() => {
                 this.showFeedbackIcon = false;
               }, 250);
@@ -152,5 +152,20 @@ export class Tab1Page implements AfterViewInit {
       this.score--;
     }
     this.lastSwipeCorrect = isCorrect;
+  }
+
+  resetGame() {
+    this.cards = [...this.cards]; // reassign to reset DOM
+    this.currentCardIndex = 0;
+    this.score = 0;
+    this.correctCount = 0;
+    this.incorrectCount = 0;
+    this.lastSwipeCorrect = null;
+    this.feedbackIcon = '';
+    this.showFeedbackIcon = false;
+    this.feedbackHidden = true;
+    this.gameOver = false;
+
+    setTimeout(() => this.attachGestureToCurrentCard(), 200);
   }
 }

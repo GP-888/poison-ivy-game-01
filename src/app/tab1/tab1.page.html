@@ -1,21 +1,33 @@
 <ion-content>
   <div class="card-stack" style="position: relative;">
-    <div
-      *ngFor="let card of cards; let i = index"
-      #swipeCard
-      class="swipe-card"
-      tabindex="0"
-      [style.zIndex]="cards.length - i"
-    >
-      <img [src]="card.img" alt="Card Image" />
-    </div>
-
+    <!-- Cards -->
+    <ng-container *ngIf="!gameOver">
+      <div *ngFor="let card of cards; let i = index" #swipeCard class="swipe-card" tabindex="0"
+        [style.zIndex]="cards.length - i">
+        <img [src]="card.img" alt="Card Image" />
+      </div>
+    </ng-container>
+    <!-- Feedback Icon -->
     <div class="swipe-feedback-icon" *ngIf="showFeedbackIcon">
       {{ feedbackIcon }}
     </div>
+
+    <!-- End Game Display -->
+    <div class="end-game-summary" *ngIf="gameOver">
+      <h2>Game Over!</h2>
+      <p>Score: {{ score }}</p>
+      <p>Correct swipes: {{ correctCount }}</p>
+      <p>Incorrect swipes: {{ incorrectCount }}</p>
+
+      <div class="end-buttons">
+        <ion-button (click)="resetGame()">Play Again</ion-button>
+        <ion-button color="medium">I'm done</ion-button>
+      </div>
+    </div>
   </div>
 
-  <div class="score-info">
+  <!-- Score Info (gameplay only) -->
+  <div class="score-info" *ngIf="!gameOver">
     <div>Score: {{ score }}</div>
     <div>Correct swipes: {{ correctCount }}</div>
     <div>Incorrect swipes: {{ incorrectCount }}</div>
