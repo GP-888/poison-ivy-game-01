@@ -1,5 +1,5 @@
 <ion-content>
-  <div class="card-stack">
+  <div class="card-stack" style="position: relative;">
     <div
       *ngFor="let card of cards; let i = index"
       #swipeCard
@@ -8,6 +8,10 @@
       [style.zIndex]="cards.length - i"
     >
       <img [src]="card.img" alt="Card Image" />
+    </div>
+
+    <div class="swipe-feedback-icon" *ngIf="showFeedbackIcon">
+      {{ feedbackIcon }}
     </div>
   </div>
 

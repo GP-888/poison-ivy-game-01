@@ -38,6 +38,13 @@ export class Tab1Page implements AfterViewInit {
   incorrectCount = 0;
   lastSwipeCorrect: boolean | null = null;
 
+  // Feedback icon state
+  showFeedbackIcon = false;
+  feedbackIcon = '';
+  feedbackHidden = true;
+
+  private feedbackTimeout?: ReturnType<typeof setTimeout>;
+
   constructor(
     private gestureCtrl: GestureController,
     private feedbackService: FeedbackService,
@@ -45,7 +52,7 @@ export class Tab1Page implements AfterViewInit {
   ) {}
 
   ngAfterViewInit() {
-    setTimeout(() => this.attachGestureToCurrentCard(), 200); // wait for DOM + image
+    setTimeout(() => this.attachGestureToCurrentCard(), 200);
     this.cardElements.changes.subscribe(() => {
       setTimeout(() => this.attachGestureToCurrentCard(), 200);
     });
@@ -71,7 +78,7 @@ export class Tab1Page implements AfterViewInit {
       canStart: () => true,
       onStart: () => {
         cardEl.style.transition = 'none';
-        cardEl.focus?.(); // focus for desktop
+        cardEl.focus?.();
       },
       onMove: (ev) => {
         const x = ev.deltaX;
@@ -86,22 +93,41 @@ export class Tab1Page implements AfterViewInit {
         const userSwipedRight = x > threshold;
         const userSwipedLeft = x < -threshold;
 
-        const currentCard = this.cards[this.currentCardIndex];
-        const isCorrect =
-          (userSwipedRight && currentCard.isPoisonIvy) ||
-          (userSwipedLeft && !currentCard.isPoisonIvy);
-
         if (Math.abs(x) > threshold) {
+          const currentCard = this.cards[this.currentCardIndex];
+          const isCorrect =
+            (userSwipedRight && currentCard.isPoisonIvy) ||
+            (userSwipedLeft && !currentCard.isPoisonIvy);
+
+          this.ngZone.run(() => {
+            this.updateScores(isCorrect);
+
+            // Set icon and show it
+            this.feedbackIcon = isCorrect ? '✓' : '✗';
+            this.showFeedbackIcon = true;
+            this.feedbackHidden = false;
+
+            // Clear any previous timeout
+            if (this.feedbackTimeout) {
+              clearTimeout(this.feedbackTimeout);
+            }
+
+            // Hide icon after 2 seconds with fade out
+            this.feedbackTimeout = setTimeout(() => {
+              this.feedbackHidden = true;
+              // Hide completely after fade transition (0.5s)
+              setTimeout(() => {
+                this.showFeedbackIcon = false;
+              }, 250);
+            }, 250);
+          });
+
           const flyX = userSwipedRight ? 1000 : -1000;
           const rotate = x * 0.2;
           cardEl.style.transition = 'transform 0.3s ease-out';
           cardEl.style.transform = `translate(${flyX}px, 0) rotate(${rotate}deg)`;
 
           this.feedbackService.giveFeedback(isCorrect, cardEl);
-
-          this.ngZone.run(() => {
-            this.updateScores(isCorrect);
-          });
 
           setTimeout(() => {
             this.currentCardIndex++;
